@@ -1,0 +1,67 @@
+[project]
+name = "ms-order"
+version = "0.1.0"
+description = "訂單微服務POC"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.20",
+    "fastapi>=0.115",
+    "httpx>=0.27",
+    "uvicorn>=0.34",
+]
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.1",
+    "pytest>=8.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-cov>=6.0",
+    "ruff>=0.16.7",
+    "vulture>=2.14",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle(含行長 E501)
+    "F",    # pyflakes：未定義名稱、未使用 import
+    "I",    # import 排序(isort)，auto-fix
+    "UP",   # 舊語法升級成 3.13 寫法(pyupgrade)，auto-fix
+    "B",    # 常見 bug 模式(flake8-bugbear)
+    "C4",   # comprehension 寫法建議(可 auto-fix)
+    "SIM",  # 冗長邏輯簡化(多數可 auto-fix)
+    "PERF", # 效能反模式(Perflint)
+    "RUF",  # ruff 自家雜項規則
+    "N",    # PEP 8 命名規範(pep8-naming)
+    "PT",   # pytest 慣例(flake8-pytest-style)
+    "PLC0415",  # import 只准放在檔頭
+]
+ignore = [
+    "RUF001", # 字串中的中文全形標點(，：)為正常中文內容
+    "RUF002", # 文件字串中的全形標點
+    "RUF003", # 註解中的全形標點
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["domain", "application", "infrastructure", "interfaces"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]
+addopts = "-s --cov=src --cov-report=term-missing"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.importlinter]
+root_packages = ["domain", "application", "infrastructure", "interfaces"]
+
+[[tool.importlinter.contracts]]
+name = "DDD 分層：interfaces 在上，application|infrastructure 同層，domain 在下"
+type = "layers"
+layers = ["interfaces", "application | infrastructure", "domain"]
